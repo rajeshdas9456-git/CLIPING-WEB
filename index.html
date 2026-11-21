@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipForge AI - AI-Powered YouTube to Shorts & Reels Generator</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Montserrat:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- App Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- =====================================================================
+       Sidebar Navigation
+       ===================================================================== -->
+  <aside class="app-sidebar" id="appSidebar">
+    <div class="sidebar-header">
+      <div class="brand-logo">
+        <div class="brand-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div class="brand-title">ClipForge <span style="color:var(--accent-cyan)">AI</span></div>
+      </div>
+      <span class="brand-badge">v2.4</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Workspace</div>
+      <a class="nav-item active" data-view="dashboard">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" data-view="importer">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <span>Import Video</span>
+        <span class="nav-pill">3 Ways</span>
+      </a>
+      <a class="nav-item" data-view="generator">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>AI Clip Generator</span>
+        <span class="nav-pill" style="color:#ffeb3b">Core</span>
+      </a>
+      <a class="nav-item" data-view="editor">
+        <i class="fa-solid fa-film"></i>
+        <span>AI Video Editor</span>
+      </a>
+      <a class="nav-item" data-view="subtitles">
+        <i class="fa-solid fa-closed-captioning"></i>
+        <span>AI Captions</span>
+        <span class="nav-pill" style="color:var(--accent-green)">EN/HI/BN</span>
+      </a>
+
+      <div class="nav-section-title">Manage & Export</div>
+      <a class="nav-item" data-view="projects">
+        <i class="fa-solid fa-folder-open"></i>
+        <span>My Projects</span>
+      </a>
+      <a class="nav-item" data-view="export">
+        <i class="fa-solid fa-share-nodes"></i>
+        <span>Social Media Export</span>
+      </a>
+
+      <div class="nav-section-title">Control Center</div>
+      <a class="nav-item" data-view="admin">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Admin Dashboard</span>
+        <span class="nav-pill" style="background:rgba(239,68,68,0.2);color:#ef4444">Admin</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="quota-widget">
+        <div class="quota-header">
+          <span style="color:var(--text-secondary)">Cloud Storage</span>
+          <span id="sidebarQuotaText" style="color:var(--accent-cyan)">3.4 / 10 GB</span>
+        </div>
+        <div class="quota-progress">
+          <div class="quota-bar" id="sidebarQuotaBar" style="width: 34%;"></div>
+        </div>
+      </div>
+
+      <div class="user-profile-badge" id="btnOpenProfile">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80" alt="User Avatar" class="user-avatar" id="sidebarUserAvatar">
+        <div class="user-info">
+          <div class="user-name" id="sidebarUserName">Sarah Jenkins</div>
+          <div class="user-tier" id="sidebarUserTier">PRO CREATOR</div>
+        </div>
+        <i class="fa-solid fa-gear" style="color:var(--text-muted);font-size:14px;"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =====================================================================
+       Main Content Container
+       ===================================================================== -->
+  <main class="app-main">
+    
+    <!-- Header Bar -->
+    <header class="app-header">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="btn btn-icon d-lg-none" id="btnToggleSidebar">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="header-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="globalSearchInput" placeholder="Search projects, clips, or YouTube links...">
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btnQuickCreate">
+          <i class="fa-solid fa-plus"></i>
+          <span>Quick Create</span>
+        </button>
+
+        <button class="btn btn-icon" id="btnNotifications" title="Processing Notifications">
+          <i class="fa-regular fa-bell"></i>
+        </button>
+
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button class="btn btn-secondary btn-sm" id="btnHeaderAuth">
+            <i class="fa-solid fa-user"></i>
+            <span id="headerAuthLabel">Sign In</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================================================================
+         VIEW 1: Dashboard
+         =================================================================== -->
+    <section class="page-view active" id="view-dashboard">
+      <div class="page-header-row">
+        <div class="page-title-group">
+          <h1>Welcome to ClipForge AI <span style="font-size:18px">👋</span></h1>
+          <p>Transform long YouTube videos, live streams, and recordings into high-converting Shorts & Reels in seconds.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-secondary" onclick="ClipForge.navigateTo('projects')">
+            <i class="fa-solid fa-folder"></i> View All Projects
+          </button>
+          <button class="btn btn-primary" onclick="ClipForge.openImportModal()">
+            <i class="fa-solid fa-video"></i> New Project
+          </button>
+        </div>
+      </div>
+
+      <!-- SaaS Key Metrics -->
+      <div class="metrics-grid">
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Total Videos Processed</span>
+            <div class="metric-icon-wrap" style="background:rgba(139,92,246,0.15);color:var(--primary-purple)">
+              <i class="fa-solid fa-clapperboard"></i>
+            </div>
+          </div>
+          <div class="metric-val" id="statTotalVideos">48</div>
+          <div class="metric-sub"><i class="fa-solid fa-arrow-trend-up"></i> +24% this week</div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Clips Generated</span>
+            <div class="metric-icon-wrap" style="background:rgba(6,182,212,0.15);color:var(--accent-cyan)">
+              <i class="fa-solid fa-film"></i>
+            </div>
+          </div>
+          <div class="metric-val" id="statTotalClips">186</div>
+          <div class="metric-sub"><i class="fa-solid fa-arrow-trend-up"></i> +42% virality score avg</div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Storage Usage</span>
+            <div class="metric-icon-wrap" style="background:rgba(236,72,153,0.15);color:var(--accent-magenta)">
+              <i class="fa-solid fa-hard-drive"></i>
+            </div>
+          </div>
+          <div class="metric-val" id="statStorageUsed">3.4 GB</div>
+          <div class="metric-sub" style="color:var(--text-muted)">10.0 GB Limit (Pro Plan)</div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Estimated Viral Reach</span>
+            <div class="metric-icon-wrap" style="background:rgba(16,185,129,0.15);color:var(--accent-green)">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+          </div>
+          <div class="metric-val">1.4M+</div>
+          <div class="metric-sub"><i class="fa-solid fa-fire"></i> YouTube Shorts & Reels</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Banners -->
+      <div class="quick-action-bar">
+        <div class="quick-action-card" onclick="ClipForge.openImportTab('youtube')">
+          <div class="quick-action-icon" style="color:#ef4444;background:rgba(239,68,68,0.15)">
+            <i class="fa-brands fa-youtube"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;color:#fff;">Import YouTube Link</div>
+            <div style="font-size:12px;color:var(--text-muted)">Paste standard video URL</div>
+          </div>
+        </div>
+
+        <div class="quick-action-card" onclick="ClipForge.openImportTab('live')">
+          <div class="quick-action-icon" style="color:#ec4899;background:rgba(236,72,153,0.15)">
+            <i class="fa-solid fa-tower-broadcast"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;color:#fff;">Import Live Stream</div>
+            <div style="font-size:12px;color:var(--text-muted)">Completed broadcasts & VODs</div>
+          </div>
+        </div>
+
+        <div class="quick-action-card" onclick="ClipForge.openImportTab('upload')">
+          <div class="quick-action-icon" style="color:var(--accent-cyan);background:rgba(6,182,212,0.15)">
+            <i class="fa-solid fa-upload"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;color:#fff;">Upload Video File</div>
+            <div style="font-size:12px;color:var(--text-muted)">MP4, MOV, or WEBM up to 2GB</div>
+          </div>
+        </div>
+
+        <div class="quick-action-card" onclick="ClipForge.openImportTab('samples')">
+          <div class="quick-action-icon" style="color:var(--accent-amber);background:rgba(245,158,11,0.15)">
+            <i class="fa-solid fa-sparkles"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;color:#fff;">Try Sample Creator Video</div>
+            <div style="font-size:12px;color:var(--text-muted)">Instant 1-click test clips</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Processing Pipeline -->
+      <div class="pipeline-banner">
+        <div class="pipeline-info">
+          <div style="width:34px;height:34px;border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;color:var(--accent-green);font-size:18px;">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;color:#fff;font-size:14px;display:flex;align-items:center;gap:8px;">
+              <span>AI Clipping Pipeline Active</span>
+              <span class="brand-badge" style="background:rgba(16,185,129,0.15);color:var(--accent-green);border-color:rgba(16,185,129,0.3);">READY</span>
+            </div>
+            <div style="font-size:12px;color:var(--text-secondary)">Hardware Acceleration: NVENC GPU Enabled | Speech Engine: Faster-Whisper Large-v3</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="ClipForge.navigateTo('admin')">
+          <i class="fa-solid fa-server"></i> View Queue Status
+        </button>
+      </div>
+
+      <!-- Recent Projects Section -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2>Recent Projects</h2>
+        <a href="#" style="font-size:13px;font-weight:600;" onclick="ClipForge.navigateTo('projects')">View All Projects →</a>
+      </div>
+
+      <div class="projects-grid" id="dashboardRecentProjects">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         VIEW 2: Video Import System (Three Import Options + Samples)
+         =================================================================== -->
+    <section class="page-view" id="view-importer">
+      <div class="page-header-row">
+        <div class="page-title-group">
+          <h1>Import Video to ClipForge</h1>
+          <p>Select how you want to bring in your long-form content. AI will detect interesting moments automatically.</p>
+        </div>
+      </div>
+
+      <div class="glass-card" style="max-width:900px;margin:0 auto;">
+        <!-- Tabs for 3 Import Options + Samples -->
+        <div class="tab-group">
+          <button class="tab-btn active" data-tab="tab-yt-url">
+            <i class="fa-brands fa-youtube" style="color:#ef4444"></i> A. YouTube URL
+          </button>
+          <button class="tab-btn" data-tab="tab-yt-live">
+            <i class="fa-solid fa-tower-broadcast" style="color:#ec4899"></i> B. YouTube Live Stream
+          </button>
+          <button class="tab-btn" data-tab="tab-upload">
+            <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent-cyan)"></i> C. Upload Video
+          </button>
+          <button class="tab-btn" data-tab="tab-samples">
+            <i class="fa-solid fa-sparkles" style="color:var(--accent-amber)"></i> Ready-to-Test Samples
+          </button>
+        </div>
+
+        <!-- TAB A: YouTube URL -->
+        <div class="import-tab-content active" id="tab-yt-url">
+          <div class="form-group">
+            <label class="form-label">Paste YouTube Video URL</label>
+            <div style="display:flex;gap:10px;">
+              <input type="text" class="form-input" id="inputYoutubeUrl" placeholder="https://www.youtube.com/watch?v=..." value="https://www.youtube.com/watch?v=L_Guz73e6fw">
+              <button class="btn btn-primary" id="btnValidateYt">
+                <i class="fa-solid fa-check"></i> Validate & Fetch
+              </button>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+              Supports standard YouTube videos, podcasts, interviews, and creator uploads.
+            </div>
+          </div>
+
+          <!-- YouTube Metadata Preview Card -->
+          <div class="glass-card" id="ytPreviewCard" style="display:block;background:#0c0f17;border-color:var(--border-accent);padding:18px;margin-top:20px;">
+            <div style="display:flex;gap:18px;align-items:flex-start;">
+              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80" alt="Video Thumbnail" id="ytThumbPreview" style="width:220px;height:124px;border-radius:8px;object-fit:cover;border:1px solid var(--border-subtle);">
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span class="source-type-pill youtube" style="position:static;">YouTube Verified</span>
+                  <span style="font-size:11px;color:var(--accent-green);font-weight:700;"><i class="fa-solid fa-shield-check"></i> Authorized Source</span>
+                </div>
+                <h3 id="ytTitlePreview" style="font-size:16px;margin-bottom:6px;">The Future of Artificial Intelligence - Lex & Sam Podcast</h3>
+                <div style="font-size:12px;color:var(--text-muted);display:flex;gap:16px;">
+                  <span><i class="fa-regular fa-clock"></i> Duration: <strong id="ytDurationPreview" style="color:#fff">64:00</strong></span>
+                  <span><i class="fa-solid fa-eye"></i> 1.2M views</span>
+                  <span><i class="fa-solid fa-video"></i> 1080p FHD</span>
+                </div>
+                <div style="margin-top:14px;display:flex;gap:10px;">
+                  <button class="btn btn-primary" id="btnProceedYtGenerate">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Clips Now
+                  </button>
+                  <button class="btn btn-secondary" onclick="ClipForge.quickLoadEditor('proj_ai_future')">
+                    <i class="fa-solid fa-film"></i> Open in Editor
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: YouTube Live Stream -->
+        <div class="import-tab-content" id="tab-yt-live" style="display:none;">
+          <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:center;">
+            <i class="fa-solid fa-circle-exclamation" style="color:#ef4444;font-size:20px;"></i>
+            <div style="font-size:12px;color:#fca5a5;">
+              <strong>Live Stream Guidelines:</strong> Import supported live-stream recordings or completed broadcasts. Stream processing is supported after the broadcast has ended or from authorized VOD feeds. Protected or DRM-restricted streams are respected.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Paste Completed Live Stream Recording URL</label>
+            <div style="display:flex;gap:10px;">
+              <input type="text" class="form-input" id="inputLiveUrl" placeholder="https://www.youtube.com/live/... or https://www.youtube.com/watch?v=..." value="https://www.youtube.com/live/exampleDroneVOD">
+              <button class="btn btn-accent" id="btnValidateLive">
+                <i class="fa-solid fa-tower-broadcast"></i> Validate Stream VOD
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card" id="livePreviewCard" style="display:block;background:#0c0f17;border-color:rgba(236,72,153,0.3);padding:18px;">
+            <div style="display:flex;gap:18px;align-items:flex-start;">
+              <img src="https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=800&auto=format&fit=crop&q=80" alt="Stream Thumbnail" style="width:220px;height:124px;border-radius:8px;object-fit:cover;">
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span class="source-type-pill youtube_live" style="position:static;"><span class="live-dot"></span> Completed Broadcast</span>
+                  <span style="font-size:11px;color:var(--accent-cyan);font-weight:700;">VOD Available</span>
+                </div>
+                <h3 style="font-size:16px;margin-bottom:6px;">World Drone Racing Championship - Official Live Stream VOD</h3>
+                <div style="font-size:12px;color:var(--text-muted);display:flex;gap:16px;">
+                  <span><i class="fa-regular fa-clock"></i> Duration: <strong style="color:#fff">01:26:40</strong></span>
+                  <span><i class="fa-solid fa-users"></i> 48,000 Chat Reactions</span>
+                </div>
+                <div style="margin-top:14px;">
+                  <button class="btn btn-primary" onclick="ClipForge.quickLoadEditor('proj_live_drone')">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Process Stream Highlights
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB C: Upload Video -->
+        <div class="import-tab-content" id="tab-upload" style="display:none;">
+          <div class="dropzone" id="fileDropZone">
+            <input type="file" id="videoFileInput" accept=".mp4,.mov,.webm" style="display:none;">
+            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+            <h3 style="font-size:16px;">Drag and drop your video file here</h3>
+            <p>Supports MP4, MOV, WEBM (up to 2GB, 4K supported)</p>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('videoFileInput').click()">
+              <i class="fa-solid fa-folder-open"></i> Browse Files
+            </button>
+          </div>
+
+          <!-- Upload Progress -->
+          <div id="uploadProgressSection" style="display:none;margin-top:20px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+              <span id="uploadFileName" style="font-weight:700;color:#fff;">my_creator_video.mp4</span>
+              <span id="uploadPercentage" style="color:var(--accent-cyan);">45% (8.4 MB/s)</span>
+            </div>
+            <div class="quota-progress" style="height:8px;">
+              <div class="quota-bar" id="uploadProgressBar" style="width:45%;background:var(--gradient-accent);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB D: Ready-to-Test Sample Videos -->
+        <div class="import-tab-content" id="tab-samples" style="display:none;">
+          <p style="margin-bottom:16px;font-size:13px;">Click any sample below to immediately test the AI Clip Generator and Studio Editor with pre-analyzed videos:</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
+            <div class="glass-card" style="padding:14px;cursor:pointer;border-color:rgba(139,92,246,0.3);" onclick="ClipForge.loadSampleProject('proj_ai_future')">
+              <div style="font-size:11px;font-weight:700;color:var(--primary-purple);margin-bottom:4px;">PODCAST & TECH (EN)</div>
+              <h4 style="font-size:14px;margin-bottom:6px;">Lex & Sam - Future of AI</h4>
+              <div style="font-size:12px;color:var(--text-muted);">64 Min Video • 5 Generated Viral Clips</div>
+            </div>
+
+            <div class="glass-card" style="padding:14px;cursor:pointer;border-color:rgba(236,72,153,0.3);" onclick="ClipForge.loadSampleProject('proj_hindi_tech')">
+              <div style="font-size:11px;font-weight:700;color:var(--accent-magenta);margin-bottom:4px;">HINDI TECH & UNBOXING (हिन्दी)</div>
+              <h4 style="font-size:14px;margin-bottom:6px;">₹1 Lakh Mystery Tech Box</h4>
+              <div style="font-size:12px;color:var(--text-muted);">23 Min Video • Word-by-word Hindi Captions</div>
+            </div>
+
+            <div class="glass-card" style="padding:14px;cursor:pointer;border-color:rgba(6,182,212,0.3);" onclick="ClipForge.loadSampleProject('proj_bengali_tech')">
+              <div style="font-size:11px;font-weight:700;color:var(--accent-cyan);margin-bottom:4px;">BENGALI CODING TALK (বাংলা)</div>
+              <h4 style="font-size:14px;margin-bottom:6px;">২০২৬ সেরা প্রোগ্রামিং গাইড</h4>
+              <div style="font-size:12px;color:var(--text-muted);">31 Min Video • Bengali Word Timings</div>
+            </div>
+
+            <div class="glass-card" style="padding:14px;cursor:pointer;border-color:rgba(239,68,68,0.3);" onclick="ClipForge.loadSampleProject('proj_live_drone')">
+              <div style="font-size:11px;font-weight:700;color:#ef4444;margin-bottom:4px;">LIVE STREAM VOD (ACTION)</div>
+              <h4 style="font-size:14px;margin-bottom:6px;">Drone Racing Championship</h4>
+              <div style="font-size:12px;color:var(--text-muted);">86 Min Stream • High Intensity Crash Moments</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         VIEW 3: AI Automatic Clip Generator (Core Engine)
+         =================================================================== -->
+    <section class="page-view" id="view-generator">
+      <div class="page-header-row">
+        <div class="page-title-group">
+          <h1>AI Automatic Clip Generator <span style="font-size:14px;padding:3px 8px;border-radius:6px;background:rgba(139,92,246,0.2);color:var(--primary-purple);margin-left:8px;">Core Engine</span></h1>
+          <p>AI scans speech, acoustic energy spikes, humor, and emotional payoffs to generate high-retention vertical clips.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-secondary" onclick="ClipForge.navigateTo('importer')">
+            <i class="fa-solid fa-repeat"></i> Change Source Video
+          </button>
+          <button class="btn btn-primary" id="btnRunAiGenerator">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Viral Clips
+          </button>
+        </div>
+      </div>
+
+      <!-- Generator Settings Bar -->
+      <div class="glass-card" style="margin-bottom:28px;padding:18px 24px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:20px;align-items:center;">
+          
+          <!-- Clip Duration Preference -->
+          <div>
+            <label class="form-label"><i class="fa-regular fa-clock"></i> Target Clip Duration</label>
+            <div style="display:flex;gap:6px;" id="durationPrefButtons">
+              <button class="btn btn-secondary btn-sm duration-btn" data-dur="15">15s</button>
+              <button class="btn btn-primary btn-sm duration-btn active" data-dur="30">30s (Best)</button>
+              <button class="btn btn-secondary btn-sm duration-btn" data-dur="45">45s</button>
+              <button class="btn btn-secondary btn-sm duration-btn" data-dur="60">60s</button>
+            </div>
+          </div>
+
+          <!-- Moment Content Flavor -->
+          <div>
+            <label class="form-label"><i class="fa-solid fa-brain"></i> Moment Detection Focus</label>
+            <select class="form-select" id="selectMomentFlavor">
+              <option value="viral_hooks">🎯 Viral Hooks & High Energy</option>
+              <option value="funny">😂 Funny Moments & Reactions</option>
+              <option value="educational">🧠 Educational & Actionable Info</option>
+              <option value="motivational">🔥 Motivational & Speeches</option>
+              <option value="conversations">💬 Important Conversations</option>
+              <option value="storytelling">📖 Engaging Storytelling Moments</option>
+            </select>
+          </div>
+
+          <!-- Language Selector -->
+          <div>
+            <label class="form-label"><i class="fa-solid fa-language"></i> Caption & Speech Language</label>
+            <select class="form-select" id="selectGeneratorLang">
+              <option value="en">English (Word-Timed)</option>
+              <option value="hi">Hindi (हिन्दी / Hinglish)</option>
+              <option value="bn">Bengali (বাংলা)</option>
+            </select>
+          </div>
+
+          <!-- Active Project Info -->
+          <div style="background:rgba(0,0,0,0.3);padding:10px 14px;border-radius:8px;border:1px solid var(--border-subtle);">
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;">Active Project Source</div>
+            <div style="font-weight:700;color:#fff;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="activeProjTitle">
+              The Future of Artificial Intelligence - Lex & Sam Podcast
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Generated Clips Grid -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 id="generatedClipsHeading">Generated AI Clips (5 Moments Found)</h2>
+        <div style="font-size:12px;color:var(--text-muted);">Sorted by AI Virality Score</div>
+      </div>
+
+      <div class="projects-grid" id="generatedClipsContainer">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         VIEW 4: AI Video Editor Studio
+         =================================================================== -->
+    <section class="page-view" id="view-editor">
+      <div class="page-header-row" style="margin-bottom:14px;">
+        <div class="page-title-group">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <button class="btn btn-icon btn-sm" onclick="ClipForge.navigateTo('generator')" title="Back to Clips">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h1 id="studioClipTitle" style="font-size:20px;">The Shocking Truth About AGI Nobody Tells You 🧠</h1>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-secondary btn-sm" id="btnStudioSaveClip">
+            <i class="fa-regular fa-floppy-disk"></i> Save Changes
+          </button>
+          <button class="btn btn-primary btn-sm" id="btnStudioExportNow">
+            <i class="fa-solid fa-share-nodes"></i> Export Reel / Short
+          </button>
+        </div>
+      </div>
+
+      <!-- Studio Editor Layout -->
+      <div class="studio-layout">
+        
+        <!-- Left: Studio Main (Player + Timeline) -->
+        <div class="studio-main">
+          
+          <!-- Viewport Stage -->
+          <div class="studio-viewport" id="studioViewport">
+            <!-- Dynamic Aspect Ratio Player Stage -->
+            <div class="player-stage ratio-9-16 style-hormozi" id="playerStage">
+              
+              <!-- Blurred background simulation -->
+              <div class="stage-blur-bg" id="stageBlurBg" style="background-image:url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800');"></div>
+              
+              <!-- Real Video Player -->
+              <video class="source-video-element" id="studioVideo" src="/data/samples/demo.mp4" playsinline preload="auto"></video>
+              
+              <!-- Split bottom simulation -->
+              <div class="stage-split-bottom" id="stageSplitBottom" style="display:none;">
+                <video src="/data/samples/demo.mp4" muted loop autoplay></video>
+              </div>
+
+              <!-- Overlay: Top Viral Hook Header Banner -->
+              <div class="overlay-hook-banner" id="overlayHookBanner">
+                WAIT UNTIL YOU HEAR HOW CLOSE WE REALLY ARE 🤯
+              </div>
+
+              <!-- Overlay: Word-by-Word Subtitles -->
+              <div class="overlay-captions-container" id="overlayCaptionsContainer">
+                <div class="caption-phrase" id="overlayCaptionPhrase">
+                  <!-- Words rendered dynamically as video plays -->
+                  <span class="caption-word">The</span>
+                  <span class="caption-word active-word">secret</span>
+                  <span class="caption-word">to</span>
+                  <span class="caption-word">AGI</span>
+                </div>
+              </div>
+
+              <!-- Overlay: Outro Branding -->
+              <div class="overlay-outro-badge" id="overlayOutroBadge" style="display:flex;">
+                <i class="fa-solid fa-circle-check" style="color:var(--accent-cyan)"></i> Follow for Part 2
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Viewport Controls Bar -->
+          <div class="viewport-controls-bar">
+            <!-- Aspect Ratio Switcher -->
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Aspect:</span>
+              <div class="aspect-ratio-selector">
+                <button class="aspect-btn active" data-ratio="9-16"><i class="fa-solid fa-mobile-screen"></i> 9:16 Shorts</button>
+                <button class="aspect-btn" data-ratio="16-9"><i class="fa-solid fa-tv"></i> 16:9 YouTube</button>
+                <button class="aspect-btn" data-ratio="1-1"><i class="fa-solid fa-square"></i> 1:1 Square</button>
+              </div>
+            </div>
+
+            <!-- Framing / Layout Mode -->
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Framing:</span>
+              <select class="form-select" id="selectFramingMode" style="padding:4px 8px;font-size:11px;width:auto;">
+                <option value="smart_center">Smart Center Crop</option>
+                <option value="blur_stack">Fit with Blur Backdrop</option>
+                <option value="split_screen">Split Screen (Face + Game)</option>
+              </select>
+            </div>
+
+            <!-- Quick Speed & Volume -->
+            <div style="display:flex;align-items:center;gap:12px;">
+              <button class="btn btn-icon btn-sm" id="btnMuteToggle" title="Mute/Unmute">
+                <i class="fa-solid fa-volume-high"></i>
+              </button>
+              <select class="form-select" id="selectPlaybackSpeed" style="padding:4px 8px;font-size:11px;width:auto;">
+                <option value="1">1.0x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Studio Interactive Timeline -->
+          <div class="studio-timeline-section">
+            <div class="timeline-header-row">
+              <div class="timeline-playback-btns">
+                <button class="btn btn-icon btn-sm" id="btnTimelineRewind" title="Back 5s">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+                <button class="btn btn-primary btn-sm" id="btnTimelinePlayPause">
+                  <i class="fa-solid fa-play"></i> Play
+                </button>
+                <button class="btn btn-icon btn-sm" id="btnTimelineForward" title="Forward 5s">
+                  <i class="fa-solid fa-rotate-right"></i>
+                </button>
+                <button class="btn btn-icon btn-sm" id="btnTimelineLoop" title="Loop Range" style="color:var(--accent-cyan)">
+                  <i class="fa-solid fa-repeat"></i>
+                </button>
+              </div>
+
+              <div class="timecode-display">
+                <span class="curr-time" id="tcCurrent">00:02.0</span>
+                <span>/</span>
+                <span class="total-time" id="tcTotal">00:16.5</span>
+                <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">(Clip Length: <strong id="tcClipLength" style="color:#fff;">14.5s</strong>)</span>
+              </div>
+            </div>
+
+            <!-- Waveform Track with Draggable Trim Handles & Playhead -->
+            <div class="timeline-track-container" id="timelineTrack">
+              <canvas class="waveform-canvas" id="waveformCanvas"></canvas>
+              
+              <!-- Active Range -->
+              <div class="timeline-active-range" id="timelineActiveRange"></div>
+              
+              <!-- Draggable Start Trim Handle -->
+              <div class="trim-handle start-handle" id="handleStartTrim" title="Drag to trim start"></div>
+              
+              <!-- Draggable End Trim Handle -->
+              <div class="trim-handle end-handle" id="handleEndTrim" title="Drag to trim end"></div>
+              
+              <!-- Playhead Scrubber -->
+              <div class="timeline-playhead" id="timelinePlayhead">
+                <div class="playhead-head"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Studio Sidebar (Controls & Customization) -->
+        <div class="studio-sidebar">
+          
+          <div class="tab-group" style="padding:10px 14px 0;margin-bottom:0;">
+            <button class="tab-btn active" data-studiotab="tab-studio-subtitles">
+              <i class="fa-solid fa-closed-captioning"></i> Captions
+            </button>
+            <button class="tab-btn" data-studiotab="tab-studio-style">
+              <i class="fa-solid fa-palette"></i> Style
+            </button>
+            <button class="tab-btn" data-studiotab="tab-studio-music">
+              <i class="fa-solid fa-music"></i> Audio
+            </button>
+            <button class="tab-btn" data-studiotab="tab-studio-hook">
+              <i class="fa-solid fa-bullhorn"></i> Hook
+            </button>
+          </div>
+
+          <!-- Studio Tab 1: Captions & Words -->
+          <div class="sidebar-panel-content active" id="tab-studio-subtitles">
+            
+            <div class="studio-virality-card">
+              <div class="virality-header">
+                <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">AI Virality Potential</span>
+                <div class="virality-score-badge">
+                  <i class="fa-solid fa-fire"></i> <span id="studioViralityScore">98</span>/100
+                </div>
+              </div>
+              <div class="virality-breakdown-row">
+                <div class="breakdown-box">
+                  <div class="breakdown-label">Hook Rate</div>
+                  <div class="breakdown-val" style="color:var(--accent-green)">99%</div>
+                </div>
+                <div class="breakdown-box">
+                  <div class="breakdown-label">Retention</div>
+                  <div class="breakdown-val" style="color:var(--accent-cyan)">97%</div>
+                </div>
+                <div class="breakdown-box">
+                  <div class="breakdown-label">Re-Watch</div>
+                  <div class="breakdown-val" style="color:#ffeb3b">95%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Subtitle Preset Style</label>
+              <div class="style-preset-grid">
+                <div class="style-preset-btn active" data-style="hormozi">
+                  <div style="font-weight:900;color:#facc15;font-size:14px;">HORMOZI</div>
+                  <div style="font-size:10px;">Bold Yellow Highlight</div>
+                </div>
+                <div class="style-preset-btn" data-style="beast">
+                  <div style="font-weight:900;color:#ef4444;font-size:14px;">BEAST IMPACT</div>
+                  <div style="font-size:10px;">Intense Red / White</div>
+                </div>
+                <div class="style-preset-btn" data-style="cyber">
+                  <div style="font-weight:900;color:var(--accent-cyan);font-size:14px;">CYBER NEON</div>
+                  <div style="font-size:10px;">Glow & Tech Aesthetic</div>
+                </div>
+                <div class="style-preset-btn" data-style="clean">
+                  <div style="font-weight:700;color:#fff;font-size:14px;">MINIMAL CLEAN</div>
+                  <div style="font-size:10px;">Crisp Corporate White</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Click to Edit Words -->
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <label class="form-label" style="margin-bottom:0;">Transcript Words (Click to Edit)</label>
+                <span style="font-size:10px;color:var(--accent-cyan);">Syncs with timestamps</span>
+              </div>
+              <div class="transcript-word-list" id="studioWordList">
+                <!-- Word pills loaded here -->
+              </div>
+            </div>
+
+            <!-- Subtitle Vertical Position -->
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:6px;">
+                <span>Vertical Position Y</span>
+                <span id="labelCaptionY">60px from bottom</span>
+              </div>
+              <input type="range" class="form-input" id="sliderCaptionY" min="20" max="250" value="60" style="padding:0;">
+            </div>
+
+          </div>
+
+          <!-- Studio Tab 2: Style & Fonts -->
+          <div class="sidebar-panel-content" id="tab-studio-style" style="display:none;">
+            <div class="form-group">
+              <label class="form-label">Font Family</label>
+              <select class="form-select" id="selectStudioFont">
+                <option value="Impact">Impact (Most Viral)</option>
+                <option value="Montserrat">Montserrat Black</option>
+                <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                <option value="JetBrains Mono">JetBrains Mono</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Font Size</label>
+              <input type="range" class="form-input" id="sliderFontSize" min="18" max="42" value="26" style="padding:0;">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Active Word Glow Color</label>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <input type="color" id="pickerActiveColor" value="#facc15" style="border:none;background:transparent;width:38px;height:38px;cursor:pointer;">
+                <span style="font-size:12px;color:var(--text-secondary)">Highlight Color</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Outro CTA Branding</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff;cursor:pointer;">
+                <input type="checkbox" id="checkOutroEnabled" checked> Show "Follow for Part 2" Outro Badge
+              </label>
+            </div>
+          </div>
+
+          <!-- Studio Tab 3: Background Audio & Music -->
+          <div class="sidebar-panel-content" id="tab-studio-music" style="display:none;">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+              Select licensed royalty-free background tracks to boost retention:
+            </div>
+
+            <div class="music-track-item active" data-music="lofi">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="track-icon"><i class="fa-solid fa-headphones"></i></div>
+                <div>
+                  <div style="font-weight:700;color:#fff;font-size:13px;">Lofi Chill Dream</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Calm, Podcast & Talking Heads</div>
+                </div>
+              </div>
+              <span style="font-size:11px;color:var(--accent-green);font-weight:700;">Active</span>
+            </div>
+
+            <div class="music-track-item" data-music="phonk">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="track-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div>
+                  <div style="font-weight:700;color:#fff;font-size:13px;">Viral Phonk Energy</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Fast Pace, Gaming, Reactions</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="music-track-item" data-music="ambient">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="track-icon"><i class="fa-solid fa-atom"></i></div>
+                <div>
+                  <div style="font-weight:700;color:#fff;font-size:13px;">Ambient Tech Future</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Educational, Deep Insights</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="music-track-item" data-music="none">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="track-icon"><i class="fa-solid fa-volume-xmark"></i></div>
+                <div>
+                  <div style="font-weight:700;color:#fff;font-size:13px;">No Background Music</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Keep original audio only</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:6px;">
+                <span>Music Volume Balance</span>
+                <span id="labelMusicVol">20%</span>
+              </div>
+              <input type="range" class="form-input" id="sliderMusicVol" min="0" max="100" value="20" style="padding:0;">
+            </div>
+
+            <div class="form-group">
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff;cursor:pointer;">
+                <input type="checkbox" id="checkAutoDucking" checked> Enable Auto Audio Ducking (lowers music during speech)
+              </label>
+            </div>
+          </div>
+
+          <!-- Studio Tab 4: Viral Hook Banner -->
+          <div class="sidebar-panel-content" id="tab-studio-hook" style="display:none;">
+            <div class="form-group">
+              <label class="form-label">Viral Opening Hook Header (First 3 Seconds)</label>
+              <textarea class="form-textarea" id="inputHookText" rows="3">WAIT UNTIL YOU HEAR HOW CLOSE WE REALLY ARE 🤯</textarea>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+                AI generated curiosity hook shown at top to minimize swipe-away rate.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff;cursor:pointer;">
+                <input type="checkbox" id="checkHookBannerEnabled" checked> Display Hook Header Banner
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Suggested Social Media Caption</label>
+              <textarea class="form-textarea" id="inputCaptionText" rows="4">The timeline is collapsing faster than anyone predicted. Are we ready for recursive self-improving AI? Drop your thoughts below! 👇</textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Hashtags</label>
+              <input type="text" class="form-input" id="inputHashtagsText" value="#AI #TechNews #ArtificialIntelligence #Shorts #Reels">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         VIEW 5: AI Captions & Subtitles Engine
+         =================================================================== -->
+    <section class="page-view" id="view-subtitles">
+      <div class="page-header-row">
+        <div class="page-title-group">
+          <h1>AI Captions & Subtitle Studio</h1>
+          <p>Multi-language speech recognition supporting English, Hindi (हिन्दी / Hinglish), and Bengali (বাংলা).</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-secondary" id="btnDownloadSRT">
+            <i class="fa-solid fa-download"></i> Download SRT
+          </button>
+          <button class="btn btn-secondary" id="btnDownloadVTT">
+            <i class="fa-solid fa-file-lines"></i> Download VTT
+          </button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        
+        <!-- Left: Transcript Editor -->
+        <div class="glass-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+            <h3>Word-by-Word Timed Transcript</h3>
+            <span class="brand-badge" style="background:rgba(16,185,129,0.15);color:var(--accent-green);border-color:rgba(16,185,129,0.3)">
+              Faster-Whisper Large-v3
+            </span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;max-height:480px;overflow-y:auto;padding-right:8px;" id="subtitlesListContainer">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Right: Multi-Language & Styling Options -->
+        <div class="glass-card">
+          <h3>Multi-Language Speech Settings</h3>
+          <p style="margin-bottom:18px;">Automatic word alignment and language script configuration:</p>
+
+          <div class="form-group">
+            <label class="form-label">Spoken & Caption Language</label>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+              <div class="quick-action-card active" style="padding:12px;text-align:center;justify-content:center;border-style:solid;border-color:var(--primary-purple);background:rgba(139,92,246,0.1);">
+                <div style="font-weight:700;color:#fff;">English</div>
+                <div style="font-size:10px;color:var(--accent-cyan);">Default</div>
+              </div>
+              <div class="quick-action-card" style="padding:12px;text-align:center;justify-content:center;border-style:solid;">
+                <div style="font-weight:700;color:#fff;">हिन्दी (Hindi)</div>
+                <div style="font-size:10px;color:var(--accent-green);">Devanagari / Hinglish</div>
+              </div>
+              <div class="quick-action-card" style="padding:12px;text-align:center;justify-content:center;border-style:solid;">
+                <div style="font-weight:700;color:#fff;">বাংলা (Bengali)</div>
+                <div style="font-size:10px;color:var(--accent-magenta);">Bangla Script</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Auto-Highlighting Trigger Words</label>
+            <input type="text" class="form-input" value="secret, AGI, AI, shocking, mistake, crazy, insane, सच, गलती, সেরা, ভুল" placeholder="Comma-separated emphasis keywords">
+            <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+              Words listed here are automatically scaled and highlighted in bright contrast colors.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Max Words Per Caption Screen</label>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-primary btn-sm">1-3 Words (Hormozi Fast)</button>
+              <button class="btn btn-secondary btn-sm">4-6 Words (Balanced)</button>
+              <button class="btn btn-secondary btn-sm">Full Sentence</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         VIEW 6: Project Management
+         =================================================================== -->
+    <section class="page-view" id="view-projects">
+      <div class="page-header-row">
+        <div class="page-title-group">
+          <h1>My Projects & Library</h1>
+          <p>Manage, re-edit, rename, and download your processed video projects and generated clips.</p>
+        </div>
+        <button class="btn btn-primary" onclick="ClipForge.openImportModal()">
+          <i class="fa-solid fa-plus"></i> New Project
+        </button>
+      </div>
+
+      <!-- Filters Row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm filter-proj-btn active" data-filter="all">All Projects</button>
+          <button class="btn btn-secondary btn-sm filter-proj-btn" data-filter="youtube">YouTube Videos</button>
+          <button class="btn btn-secondary btn-sm filter-proj-btn" data-filter="youtube_live">Live Streams</button>
+          <button class="btn btn-secondary btn-sm filter-proj-btn" data-filter="upload">Uploaded Files</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);">
+          Showing <span id="projectsCountLabel">4</span> projects
+        </div>
+      </div>
+
+      <div class="projects-grid" id="allProjectsContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         VIEW 7: Social Media Export
+         =================================================================== -->
+    <section class="page-view" id="view-export">
+      <div class="page-header-row">
+        <div class="page-title-group">
+          <h1>Social Media Export Center</h1>
+          <p>Export in ready-to-publish formats for YouTube Shorts, Instagram Reels, Facebook Reels, and standard video.</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        
+        <!-- Left: Presets & Resolutions -->
+        <div class="glass-card">
+          <h3>1. Choose Social Media Preset</h3>
+          <p style="margin-bottom:18px;">Optimized aspect ratio, safe zones, and bitrate:</p>
+
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
+            <div class="style-preset-btn active" data-export-preset="youtube_shorts">
+              <div style="font-size:22px;color:#ef4444;margin-bottom:6px;"><i class="fa-brands fa-youtube"></i></div>
+              <div style="font-weight:700;color:#fff;">YouTube Shorts</div>
+              <div style="font-size:11px;color:var(--text-muted)">9:16 Vertical • Max 60s</div>
+            </div>
+
+            <div class="style-preset-btn" data-export-preset="instagram_reels">
+              <div style="font-size:22px;color:#ec4899;margin-bottom:6px;"><i class="fa-brands fa-instagram"></i></div>
+              <div style="font-weight:700;color:#fff;">Instagram Reels</div>
+              <div style="font-size:11px;color:var(--text-muted)">9:16 Vertical • High Bitrate</div>
+            </div>
+
+            <div class="style-preset-btn" data-export-preset="facebook_reels">
+              <div style="font-size:22px;color:#3b82f6;margin-bottom:6px;"><i class="fa-brands fa-facebook"></i></div>
+              <div style="font-weight:700;color:#fff;">Facebook Reels</div>
+              <div style="font-size:11px;color:var(--text-muted)">9:16 Vertical • Fast Encode</div>
+            </div>
+
+            <div class="style-preset-btn" data-export-preset="standard_16_9">
+              <div style="font-size:22px;color:var(--accent-cyan);margin-bottom:6px;"><i class="fa-solid fa-tv"></i></div>
+              <div style="font-weight:700;color:#fff;">Standard YouTube</div>
+              <div style="font-size:11px;color:var(--text-muted)">16:9 Landscape Video</div>
+            </div>
+          </div>
+
+          <h3>2. Resolution & Quality</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;margin-bottom:24px;">
+            <button class="btn btn-secondary btn-sm export-res-btn" data-res="720p">720p HD</button>
+            <button class="btn btn-primary btn-sm export-res-btn active" data-res="1080p">1080p FHD (Rec)</button>
+            <button class="btn btn-secondary btn-sm export-res-btn" data-res="4k">4K Ultra HD</button>
+          </div>
+
+          <div style="display:flex;gap:12px;">
+            <button class="btn btn-primary" id="btnDownloadSingleExport" style="flex:1;">
+              <i class="fa-solid fa-download"></i> Download Current Clip
+            </button>
+            <button class="btn btn-accent" id="btnBatchExportAll" style="flex:1;">
+              <i class="fa-solid fa-file-zipper"></i> Export All Clips (Batch)
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Social Media Copy Kit -->
+        <div class="glass-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <h3>Social Media Ready Kit</h3>
+            <button class="btn btn-outline btn-sm" id="btnCopyEntireSocialKit">
+              <i class="fa-regular fa-copy"></i> Copy Entire Kit
+            </button>
+          </div>
+          <p style="margin-bottom:18px;">Pre-formatted title, caption, hashtags, and viral posting schedule:</p>
+
+          <div class="form-group">
+            <label class="form-label">Optimized Title (Click to Copy)</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" class="form-input" id="exportKitTitle" readonly value="The Shocking Truth About AGI Nobody Tells You 🧠">
+              <button class="btn btn-secondary btn-sm" onclick="ClipForge.copyField('exportKitTitle')"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Social Caption & Engagement Hook</label>
+            <div style="position:relative;">
+              <textarea class="form-textarea" id="exportKitCaption" readonly rows="4">The timeline is collapsing faster than anyone predicted. Are we ready for recursive self-improving AI? Drop your thoughts below! 👇
+
+#AI #TechNews #ArtificialIntelligence #Shorts #Reels #ViralVideo</textarea>
+              <button class="btn btn-secondary btn-sm" style="position:absolute;top:8px;right:8px;" onclick="ClipForge.copyField('exportKitCaption')"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+
+          <div style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);border-radius:8px;padding:12px;font-size:12px;color:#67e8f9;">
+            <i class="fa-solid fa-clock"></i> <strong>Best Time to Post Today:</strong> 6:30 PM - 8:45 PM (Targeting high algorithmic retention window).
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         VIEW 8: Admin Dashboard
+         =================================================================== -->
+    <section class="page-view" id="view-admin">
+      <div class="page-header-row">
+        <div class="page-title-group">
+          <h1>Admin Control Center <span style="font-size:13px;padding:3px 8px;border-radius:6px;background:rgba(239,68,68,0.2);color:#ef4444;margin-left:8px;">Superadmin Access</span></h1>
+          <p>Monitor platform infrastructure, live rendering workers, user accounts, and AI model configurations.</p>
+        </div>
+      </div>
+
+      <!-- SaaS Infrastructure & Revenue Metrics -->
+      <div class="metrics-grid">
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Registered Users</span>
+            <div class="metric-icon-wrap" style="background:rgba(59,130,246,0.15);color:var(--primary-blue)">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+          <div class="metric-val" id="adminUsersCount">14,822</div>
+          <div class="metric-sub"><i class="fa-solid fa-arrow-trend-up"></i> +12.4% this month</div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Total Videos Processed</span>
+            <div class="metric-icon-wrap" style="background:rgba(139,92,246,0.15);color:var(--primary-purple)">
+              <i class="fa-solid fa-video"></i>
+            </div>
+          </div>
+          <div class="metric-val" id="adminVideosCount">84,294</div>
+          <div class="metric-sub"><i class="fa-solid fa-check"></i> 99.8% Success Rate</div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Shorts & Reels Rendered</span>
+            <div class="metric-icon-wrap" style="background:rgba(236,72,153,0.15);color:var(--accent-magenta)">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+          </div>
+          <div class="metric-val" id="adminClipsCount">312,456</div>
+          <div class="metric-sub"><i class="fa-solid fa-arrow-trend-up"></i> +38% MoM</div>
+        </div>
+
+        <div class="glass-card metric-card">
+          <div class="metric-header">
+            <span>Monthly Recurring Revenue</span>
+            <div class="metric-icon-wrap" style="background:rgba(16,185,129,0.15);color:var(--accent-green)">
+              <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+          </div>
+          <div class="metric-val">$48,650</div>
+          <div class="metric-sub"><i class="fa-solid fa-arrow-trend-up"></i> +16.8% MRR</div>
+        </div>
+      </div>
+
+      <!-- Live GPU Worker & Hardware Gauges -->
+      <div class="glass-card" style="margin-bottom:28px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h3>Cluster Health & Worker Nodes</h3>
+          <span class="status-pill active">All 4 Workers Healthy</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+          <div style="background:rgba(0,0,0,0.3);padding:14px;border-radius:8px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+              <span>GPU Cluster Load</span>
+              <strong style="color:var(--accent-cyan)">42%</strong>
+            </div>
+            <div class="quota-progress"><div class="quota-bar" style="width:42%"></div></div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3);padding:14px;border-radius:8px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+              <span>CPU System Load</span>
+              <strong style="color:var(--accent-green)">28%</strong>
+            </div>
+            <div class="quota-progress"><div class="quota-bar" style="width:28%;background:var(--accent-green)"></div></div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3);padding:14px;border-radius:8px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+              <span>RAM Allocation</span>
+              <strong style="color:var(--primary-purple)">14.2 / 32 GB</strong>
+            </div>
+            <div class="quota-progress"><div class="quota-bar" style="width:44%;background:var(--primary-purple)"></div></div>
+          </div>
+
+          <div style="background:rgba(0,0,0,0.3);padding:14px;border-radius:8px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+              <span>Queue Jobs Waiting</span>
+              <strong style="color:#ffeb3b">2 Jobs</strong>
+            </div>
+            <div class="quota-progress"><div class="quota-bar" style="width:20%;background:#ffeb3b"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Management Table -->
+      <div class="glass-card" style="margin-bottom:28px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h3>User Management & Subscription Tiers</h3>
+          <span style="font-size:12px;color:var(--text-muted);">Manage quotas & privileges</span>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table" id="adminUsersTable">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Plan Tier</th>
+                <th>Clips Used</th>
+                <th>Storage</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Infrastructure Settings Form -->
+      <div class="glass-card" style="margin-bottom:28px;">
+        <h3>AI Pipeline & Model Engine Configuration</h3>
+        <p style="margin-bottom:18px;">Configure the default neural models and rendering engine:</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="form-group">
+            <label class="form-label">Speech-To-Text Model</label>
+            <select class="form-select" id="adminWhisperModel">
+              <option value="faster-whisper-large-v3">faster-whisper-large-v3 (Highest Accuracy, Word-Timed)</option>
+              <option value="whisper-medium">whisper-medium (Fast)</option>
+              <option value="whisper-base">whisper-base (Lightweight)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">LLM Moment & Hook Engine</label>
+            <select class="form-select" id="adminLlmEngine">
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro (Multimodal & Viral Scoring)</option>
+              <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+              <option value="llama-3-2-local">Llama 3.2 3B (Local Offline)</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="btnAdminSaveSettings">
+          <i class="fa-solid fa-floppy-disk"></i> Save AI Engine Settings
+        </button>
+      </div>
+
+      <!-- Server Logs Stream -->
+      <div class="glass-card">
+        <h3>Real-Time System & Engine Logs</h3>
+        <div style="font-family:var(--font-mono);font-size:11px;background:#05070a;border:1px solid var(--border-subtle);border-radius:8px;padding:16px;max-height:220px;overflow-y:auto;color:#cbd5e1;line-height:1.7;" id="adminLogsContainer">
+          <!-- Logs populated by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- =======================================================================
+     MODALS
+     ======================================================================= -->
+
+<!-- 1. Authentication Modal -->
+<div class="modal-overlay" id="modalAuth">
+  <div class="modal-content" style="max-width:440px;">
+    <div class="modal-header">
+      <h3 id="authModalTitle">Sign in to ClipForge AI</h3>
+      <button class="btn btn-icon btn-sm" onclick="ClipForge.closeModal('modalAuth')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <!-- 1-Click Google OAuth -->
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:16px;border-color:rgba(255,255,255,0.2);" id="btnGoogleAuth">
+        <i class="fa-brands fa-google" style="color:#ea4335"></i> Continue with Google
+      </button>
+
+      <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-bottom:16px;position:relative;">
+        <span style="background:var(--bg-surface);padding:0 8px;">or continue with email</span>
+      </div>
+
+      <div class="form-group" id="groupFullName" style="display:none;">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="authFullName" placeholder="Your name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="authEmail" placeholder="creator@clipforge.ai" value="creator@clipforge.ai">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="authPassword" placeholder="••••••••" value="creator123">
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:18px;">
+        <a href="#" id="btnForgotPassword" style="color:var(--accent-cyan);">Forgot Password?</a>
+        <a href="#" id="btnToggleAuthMode" style="color:var(--primary-purple);font-weight:700;">Create Account</a>
+      </div>
+
+      <button class="btn btn-primary" id="btnSubmitAuth" style="width:100%;">
+        <span id="btnSubmitAuthText">Sign In</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. User Profile & Settings Modal -->
+<div class="modal-overlay" id="modalProfile">
+  <div class="modal-content" style="max-width:540px;">
+    <div class="modal-header">
+      <h3>Creator Account & Subscription</h3>
+      <button class="btn btn-icon btn-sm" onclick="ClipForge.closeModal('modalProfile')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80" alt="Avatar" class="user-avatar" style="width:54px;height:54px;" id="modalProfileAvatar">
+        <div>
+          <h3 id="modalProfileName" style="font-size:18px;">Sarah Jenkins</h3>
+          <div id="modalProfileEmail" style="font-size:12px;color:var(--text-muted)">creator@clipforge.ai</div>
+          <span class="brand-badge" id="modalProfileTier" style="margin-top:4px;display:inline-block;">PRO CREATOR</span>
+        </div>
+      </div>
+
+      <div class="quota-widget" style="margin-bottom:20px;">
+        <div class="quota-header">
+          <span>Storage Quota</span>
+          <span id="modalQuotaText" style="color:var(--accent-cyan)">3.4 / 10 GB</span>
+        </div>
+        <div class="quota-progress">
+          <div class="quota-bar" id="modalQuotaBar" style="width:34%"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Subscription Tier</label>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);padding:12px;border-radius:8px;border:1px solid var(--border-subtle);">
+          <div>
+            <div style="font-weight:700;color:#fff;">Pro Creator Plan ($29/mo)</div>
+            <div style="font-size:11px;color:var(--text-muted)">100 AI Clips/mo • 10 GB Storage • 4K Export</div>
+          </div>
+          <button class="btn btn-outline btn-sm">Upgrade to Agency</button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px;">
+        <button class="btn btn-secondary btn-sm" id="btnSignOut" style="color:#ef4444;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="ClipForge.closeModal('modalProfile')">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Project Rename Modal -->
+<div class="modal-overlay" id="modalRename">
+  <div class="modal-content" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>Rename Project</h3>
+      <button class="btn btn-icon btn-sm" onclick="ClipForge.closeModal('modalRename')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="renameProjectId">
+      <div class="form-group">
+        <label class="form-label">Project Title</label>
+        <input type="text" class="form-input" id="inputRenameTitle">
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button class="btn btn-secondary btn-sm" onclick="ClipForge.closeModal('modalRename')">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="btnConfirmRename">Save Title</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- =======================================================================
+     SCRIPTS
+     ======================================================================= -->
+<script src="js/mock_api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/importer.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/subtitles.js"></script>
+<script src="js/export.js"></script>
+<script src="js/admin.js"></script>
+
+</body>
+</html>
