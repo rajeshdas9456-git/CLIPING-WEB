@@ -1,0 +1,644 @@
+/* ==========================================================================
+   ClipForge AI - Studio Editor, Canvas, Timeline & Subtitle Styles
+   ========================================================================== */
+
+/* Studio Layout Container */
+.studio-layout {
+  display: flex;
+  height: calc(100vh - var(--header-height) - 64px);
+  gap: 20px;
+}
+
+.studio-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.studio-sidebar {
+  width: 380px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Viewport & Canvas Area */
+.studio-viewport {
+  flex: 1;
+  background: #050608;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* Dynamic Aspect Ratio Canvas Containers */
+.player-stage {
+  position: relative;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 9:16 Vertical */
+.player-stage.ratio-9-16 {
+  height: 100%;
+  aspect-ratio: 9 / 16;
+  max-height: 520px;
+  border: 2px solid rgba(139, 92, 246, 0.4);
+}
+
+/* 16:9 Landscape */
+.player-stage.ratio-16-9 {
+  width: 90%;
+  aspect-ratio: 16 / 9;
+  max-width: 720px;
+  border: 2px solid rgba(59, 130, 246, 0.4);
+}
+
+/* 1:1 Square */
+.player-stage.ratio-1-1 {
+  height: 90%;
+  aspect-ratio: 1 / 1;
+  max-height: 480px;
+  border: 2px solid rgba(6, 182, 212, 0.4);
+}
+
+/* Canvas & Real Video Element */
+.player-stage video.source-video-element {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Blurred background for fit mode */
+.stage-blur-bg {
+  position: absolute;
+  inset: -20px;
+  filter: blur(25px) brightness(0.4);
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  display: none;
+}
+.player-stage.mode-blur .stage-blur-bg {
+  display: block;
+}
+.player-stage.mode-blur video.source-video-element {
+  object-fit: contain;
+  z-index: 2;
+}
+
+/* Split Screen Mode */
+.player-stage.mode-split .source-video-element {
+  height: 50%;
+  top: 0;
+}
+.stage-split-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #111522;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  z-index: 2;
+  overflow: hidden;
+}
+.stage-split-bottom video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay: Top Viral Hook Header */
+.overlay-hook-banner {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: #000000;
+  color: #ffeb3b;
+  font-weight: 900;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 2px solid #ffeb3b;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+  letter-spacing: -0.01em;
+  text-align: center;
+  max-width: 85%;
+  pointer-events: none;
+}
+
+/* Overlay: Word-by-Word Animated Subtitles (Alex Hormozi / Beast style) */
+.overlay-captions-container {
+  position: absolute;
+  bottom: 60px;
+  left: 10px;
+  right: 10px;
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: bottom 0.2s ease;
+}
+
+.caption-phrase {
+  display: inline-block;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  padding: 4px 8px;
+}
+
+.caption-word {
+  display: inline-block;
+  margin: 0 3px;
+  transition: all 0.12s ease-out;
+}
+
+/* Caption Style Presets */
+/* 1. Hormozi Style (Bold Yellow/Green active word + Black Stroke) */
+.style-hormozi .caption-phrase {
+  font-family: 'Impact', 'Montserrat', sans-serif;
+  font-size: 26px;
+  color: #ffffff;
+  -webkit-text-stroke: 1.5px #000;
+  text-shadow: 0 3px 0 #000, 0 6px 12px rgba(0,0,0,0.8);
+}
+.style-hormozi .caption-word.active-word {
+  color: #facc15;
+  transform: scale(1.18);
+  -webkit-text-stroke: 1.8px #000;
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.8));
+}
+
+/* 2. MrBeast Impact Style (Intense Red / Yellow + White text) */
+.style-beast .caption-phrase {
+  font-family: 'Impact', sans-serif;
+  font-size: 28px;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 14px;
+  border-radius: 8px;
+  -webkit-text-stroke: 2px #000;
+}
+.style-beast .caption-word.active-word {
+  color: #ef4444;
+  transform: scale(1.25) rotate(-2deg);
+  filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.9));
+}
+
+/* 3. Cyber Neon (Cyan glow + Indigo text) */
+.style-cyber .caption-phrase {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 24px;
+  color: #e2e8f0;
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+}
+.style-cyber .caption-word.active-word {
+  color: #06b6d4;
+  transform: scale(1.15);
+  text-shadow: 0 0 15px #06b6d4, 0 0 25px rgba(139, 92, 246, 0.8);
+}
+
+/* 4. GTA Style (Yellow text on black pill) */
+.style-gta .caption-phrase {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 22px;
+  color: #ffffff;
+  background: #000000;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #333;
+}
+.style-gta .caption-word.active-word {
+  color: #fbbf24;
+  transform: scale(1.1);
+}
+
+/* 5. Minimal Clean */
+.style-clean .caption-phrase {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+}
+.style-clean .caption-word.active-word {
+  color: #38bdf8;
+  font-weight: 900;
+}
+
+/* Branding Outro Pill */
+.overlay-outro-badge {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(14, 17, 24, 0.9);
+  border: 1px solid var(--border-accent);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+
+/* Viewport Controls Bar */
+.viewport-controls-bar {
+  height: 48px;
+  background: rgba(14, 17, 24, 0.95);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.aspect-ratio-selector {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+.aspect-btn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+.aspect-btn.active {
+  background: var(--primary-purple);
+  color: #fff;
+}
+
+/* Interactive Timeline Editor */
+.studio-timeline-section {
+  background: #0a0c12;
+  border-top: 1px solid var(--border-subtle);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeline-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timecode-display {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.timecode-display .curr-time {
+  color: var(--accent-cyan);
+}
+.timecode-display .total-time {
+  color: var(--text-muted);
+}
+
+.timeline-playback-btns {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Waveform Track & Draggable Handles */
+.timeline-track-container {
+  position: relative;
+  height: 70px;
+  background: #111522;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  user-select: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Synthetic Audio Waveform Canvas */
+.waveform-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.8;
+}
+
+/* Active Clip Range Highlight */
+.timeline-active-range {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 10%;
+  right: 50%;
+  background: rgba(139, 92, 246, 0.22);
+  border-top: 2px solid var(--primary-purple);
+  border-bottom: 2px solid var(--primary-purple);
+  pointer-events: none;
+}
+
+/* Start Trim Handle */
+.trim-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  background: var(--primary-purple);
+  cursor: ew-resize;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+}
+.trim-handle::after {
+  content: '';
+  width: 2px;
+  height: 24px;
+  background: #fff;
+  border-radius: 1px;
+}
+.trim-handle.start-handle {
+  left: 10%;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+.trim-handle.end-handle {
+  left: 50%;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+/* Playhead Scrubber Line */
+.timeline-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ff0055;
+  z-index: 6;
+  left: 15%;
+  pointer-events: none;
+}
+.playhead-head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #ff0055;
+}
+
+/* Studio Sidebar Tabs */
+.sidebar-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Virality Score Banner in Studio */
+.studio-virality-card {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.virality-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.virality-score-badge {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffeb3b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.virality-breakdown-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.breakdown-box {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+.breakdown-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.breakdown-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Style Preset Selector Cards */
+.style-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.style-preset-btn {
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+}
+.style-preset-btn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+.style-preset-btn.active {
+  border-color: var(--primary-purple);
+  background: rgba(139, 92, 246, 0.15);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+/* Inline Transcript Words Editor */
+.transcript-word-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  max-height: 220px;
+  overflow-y: auto;
+}
+.transcript-word-pill {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.transcript-word-pill:hover {
+  background: var(--primary-purple);
+  color: #fff;
+}
+.transcript-word-pill.highlight {
+  background: var(--accent-cyan);
+  color: #000;
+  font-weight: 800;
+}
+
+/* Music Selector Tracks */
+.music-track-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.music-track-item:hover {
+  border-color: var(--primary-purple);
+}
+.music-track-item.active {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: var(--primary-purple);
+}
+.track-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: rgba(139, 92, 246, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-purple);
+}
+
+/* Admin Dashboard Table */
+.admin-table-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: 20px;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.admin-table th {
+  padding: 14px 18px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.2);
+}
+.admin-table td {
+  padding: 14px 18px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.admin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+}
+.status-pill {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.status-pill.active, .status-pill.completed {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-green);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.status-pill.suspended, .status-pill.failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-red);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.status-pill.processing, .status-pill.queued {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
